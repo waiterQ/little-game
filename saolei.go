@@ -46,10 +46,10 @@ func main() {
 	}
 	rand.Seed(time.Now().UnixNano())
 
-	print(arr2, row, col, wei)
+	print(arr2, row, col, wei, 0)
 
 	x, y := 0, 0
-	fmt.Println("键入坐标开始([row] [col]):")
+	// fmt.Println("键入坐标开始([row] [col]):")
 	fmt.Scanf("%d%d", &x, &y)
 	first_click := point{x, y}
 
@@ -112,8 +112,7 @@ func main() {
 			if m.Checked {
 			} else if m.Typ == -1 {
 				m.Checked = true
-				fmt.Println("\n\n\n\n\n\n")
-				print2(arr2, row, col, wei)
+				print2(arr2, row, col, wei, discovered)
 				fmt.Println("\ngame over")
 				is_over = true
 				break
@@ -126,14 +125,13 @@ func main() {
 			// fmt.Println("discovered=", discovered)
 
 			if discovered+len(Mimes) == row*col {
-				fmt.Println("\n\n\n\n\n\n")
-				print2(arr2, row, col, wei)
+				print2(arr2, row, col, wei, discovered)
 				fmt.Println("\nyou win")
 				is_over = true
 				break
 			}
 
-			print(arr2, row, col, wei)
+			print(arr2, row, col, wei, discovered)
 		}
 		if is_over {
 			break
@@ -151,8 +149,13 @@ type Mine struct {
 	Typ     int // 0 空白 1-8周围 -1boom
 }
 
-func print(arr2 [][]Mine, row, col, wei int) {
-	view := "\n\n\n\n\n\n\n\n\n\n\n"
+func print(arr2 [][]Mine, row, col, wei, discovered int) {
+	view := ""
+	if discovered > 0 {
+		view = fmt.Sprintf("\033[%dA", 2*row+4)
+	} else {
+		view = "\n\n"
+	}
 	for i := 0; i < row; i++ {
 		for j := 0; j < col; j++ {
 			for n := 0; n < wei; n++ {
@@ -181,12 +184,18 @@ func print(arr2 [][]Mine, row, col, wei int) {
 		view += fmt.Sprintf("%d ", i)
 	}
 	view += "\n"
-	view += "键入一个坐标([x] [y]):"
+	if discovered > 0 {
+		view += "                                      \r键入一个坐标([x] [y]):"
+	} else {
+		view += "键入坐标开始([row] [col]):"
+	}
 	fmt.Printf("%s", view)
 }
 
-func print2(arr2 [][]Mine, row, col, wei int) {
-	view := "\n\n"
+func print2(arr2 [][]Mine, row, col, wei, discovered int) {
+	view := ""
+	view = fmt.Sprintf("\033[%dA", 2*row+4)
+
 	for i := 0; i < row; i++ {
 		for j := 0; j < col; j++ {
 			for n := 0; n < wei; n++ {
